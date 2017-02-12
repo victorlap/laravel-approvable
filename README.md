@@ -15,11 +15,48 @@ Via Composer
 $ composer require victorlap/laravel-approvable
 ```
 
+Next, you must install the service provider:
+
+```php
+// config/app.php
+'providers' => [
+    ...
+    Victorlap\Approvable\ApprovableServiceProvider::class,
+];
+```
+
+You can publish the migration with:
+```bash
+php artisan vendor:publish --provider="Victorlap\Approvable\ApprovableServiceProvider" --tag="migrations"
+```
+
+*Note*: The default migration assumes you are using integers for your model IDs. If you are using UUIDs, or some other format, adjust the format of the approvable_id and user_id fields in the published migration before continuing.
+
+After the migration has been published you can create the `approvals` table by running the migrations:
+
+
+```bash
+php artisan migrate
+```
+
 ## Usage
 
-``` php
-$skeleton = new Victorlap\Approvable();
-echo $skeleton->echoPhrase('Hello, League!');
+ 1. Add the trait to your eloquent model.
+ 2. (Optional) Specify the `approveOf` or `dontApproveOf` array to skip certain fields.
+
+## Example
+```php
+use Illuminate\Database\Eloquent\Model;
+use Victorlap\Approvable\Approvable;
+
+class User extends Model
+{
+    use Aprrovable;
+
+    protected $approveOf = array();
+
+    protected $dontApproveOf = array();
+}
 ```
 
 ## Change log

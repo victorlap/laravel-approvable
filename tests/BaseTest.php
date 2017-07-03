@@ -6,10 +6,8 @@ use Victorlap\Approvable\Tests\Models\User;
 use Victorlap\Approvable\Tests\Models\UserCanApprove;
 use Victorlap\Approvable\Tests\Models\UserCannotApprove;
 
-
-class BaseTests extends TestCase
+class BaseTest extends TestCase
 {
-
     private function returnUserInstance($model = User::class)
     {
         $instance = new $model([
@@ -21,7 +19,8 @@ class BaseTests extends TestCase
         return $instance;
     }
 
-    public function testApproverCanCreate() {
+    public function testApproverCanCreate()
+    {
         $user = $this->returnUserInstance(UserCanApprove::class);
 
         $user->save();
@@ -29,7 +28,8 @@ class BaseTests extends TestCase
         $this->assertTrue($user->exists);
     }
 
-    public function testRegularCanCreate() {
+    public function testRegularCanCreate()
+    {
         $user = $this->returnUserInstance(UserCannotApprove::class);
 
         $user->save();
@@ -37,23 +37,25 @@ class BaseTests extends TestCase
         $this->assertTrue($user->exists);
     }
 
-    public function testApproverCanEdit() {
+    public function testApproverCanEdit()
+    {
         $user = $this->returnUserInstance(UserCanApprove::class);
         $user->save();
 
         $user->name = 'Doe John';
         $user->save();
 
-        $this->assertEquals('Doe John',  $user->fresh()->name);
+        $this->assertEquals('Doe John', $user->fresh()->name);
     }
 
-    public function testRegularCannotEdit() {
+    public function testRegularCannotEdit()
+    {
         $user = $this->returnUserInstance(UserCannotApprove::class);
         $user->save();
 
         $user->name = 'Doe John';
         $user->save();
 
-        $this->assertEquals('John Doe',  $user->fresh()->name);
+        $this->assertEquals('John Doe', $user->fresh()->name);
     }
 }

@@ -23,4 +23,11 @@ class ApprovableServiceProvider extends ServiceProvider
             ], 'migrations');
         }
     }
+
+    /**
+     * Register the service provider.
+     */
+    public function register()
+    {
+    }
 }

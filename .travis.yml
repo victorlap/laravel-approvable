@@ -19,6 +19,7 @@ cache:
 env:
   matrix:
     - COMPOSER_FLAGS="--prefer-lowest"
+    - COMPOSER_FLAGS=""
 
 before_script:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist

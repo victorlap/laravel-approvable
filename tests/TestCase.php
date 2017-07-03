@@ -2,11 +2,13 @@
 
 namespace Victorlap\Approvable\Tests;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Victorlap\Approvable\ApprovableServiceProvider;
 
 class TestCase extends Orchestra
 {
+    use DatabaseTransactions;
 
     /**
      * Setup the test environment.
@@ -17,7 +19,7 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->artisan('migrate');
+        $this->loadMigrationsFrom(realpath(__DIR__.'/database/migrations'));
     }
 
     /**
@@ -47,7 +49,6 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            TestServiceProvider::class,
             ApprovableServiceProvider::class,
         ];
     }

@@ -61,7 +61,21 @@ trait Approvable
     }
 
     /**
+     * List all the attributes, that currently have pending changes.
+     *
+     * @return \Illuminate\Support\Collection;
+     */
+    public function getPendingApprovalAttributes()
+    {
+        return $this->approvals()
+            ->where('approved', false)
+            ->groupBy('key')
+            ->pluck('key');
+    }
+
+    /**
      * Generates a list of the last $limit approvals to any objects of the class it is being called from.
+     *
      * @param int $limit
      * @param string $order
      * @return mixed
@@ -74,6 +88,7 @@ trait Approvable
 
     /**
      * Invoked before a model is saved. Return false to abort the operation.
+     *
      * @return bool
      */
     public function preSave()

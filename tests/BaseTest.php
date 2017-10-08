@@ -84,4 +84,17 @@ class BaseTest extends TestCase
 
         $this->assertTrue($user->isPendingApproval('name'));
     }
+
+    public function testListPendingAttributes()
+    {
+        $user = $this->returnUserInstance(UserCannotApprove::class);
+        $user->save();
+
+        $this->assertEquals(collect(), $user->getPendingApprovalAttributes());
+
+        $user->name = 'Doe John';
+        $user->save();
+
+        $this->assertEquals(collect('name'), $user->getPendingApprovalAttributes());
+    }
 }

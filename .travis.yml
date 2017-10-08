@@ -24,10 +24,11 @@ env:
 before_script:
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
   - mysql -e 'create database laravel_approvable;' -uroot
+  - wget https://scrutinizer-ci.com/ocular.phar
 
 script:
   - vendor/bin/phpcs --standard=psr2 src/
   - phpunit --coverage-text --coverage-clover=coverage.clover
 
 after_script:
-  - php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

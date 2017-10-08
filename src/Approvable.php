@@ -2,6 +2,7 @@
 
 namespace Victorlap\Approvable;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -30,16 +31,33 @@ trait Approvable
     public static function bootApprovable()
     {
         static::saving(function ($model) {
-            $model->preSave();
+            return $model->preSave();
         });
     }
 
     /**
-     * @return mixed
+     * @return MorphMany
      */
     public function approvals()
     {
-        return $this->morphMany('\Victorlap\Approvable\Approval', 'approvable');
+        return $this->morphMany(Approval::class, 'approvable');
+    }
+
+    /**
+     * Check if this model has pending changes,
+     * If an attribute is provided, check if the attribute has pending changes.
+     *
+     * @param null $attribute
+     * @return bool
+     */
+    public function isPendingApproval($attribute = null)
+    {
+        return $this->approvals()
+                ->when($attribute !== null, function ($query) use ($attribute) {
+                    $query->where('key', $attribute);
+                })
+                ->where('approved', false)
+                ->count() > 0;
     }
 
     /**

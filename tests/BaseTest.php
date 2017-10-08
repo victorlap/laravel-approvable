@@ -58,4 +58,30 @@ class BaseTest extends TestCase
 
         $this->assertEquals('John Doe', $user->fresh()->name);
     }
+
+    public function testHasPendingModelChanges()
+    {
+        $user = $this->returnUserInstance(UserCannotApprove::class);
+        $user->save();
+
+        $this->assertFalse($user->isPendingApproval());
+
+        $user->name = 'Doe John';
+        $user->save();
+
+        $this->assertTrue($user->isPendingApproval());
+    }
+
+    public function testHasPendingAttributeChanges()
+    {
+        $user = $this->returnUserInstance(UserCannotApprove::class);
+        $user->save();
+
+        $this->assertFalse($user->isPendingApproval('name'));
+
+        $user->name = 'Doe John';
+        $user->save();
+
+        $this->assertTrue($user->isPendingApproval('name'));
+    }
 }

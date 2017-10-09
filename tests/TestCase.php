@@ -5,6 +5,7 @@ namespace Victorlap\Approvable\Tests;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Victorlap\Approvable\Tests\Models\User;
 use Victorlap\Approvable\ApprovableServiceProvider;
 
 class TestCase extends Orchestra
@@ -20,7 +21,7 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(realpath(__DIR__.'/database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__ . '/database/migrations'));
     }
 
     /**
@@ -53,5 +54,16 @@ class TestCase extends Orchestra
             ApprovableServiceProvider::class,
             ConsoleServiceProvider::class,
         ];
+    }
+
+    protected function returnUserInstance($model = User::class)
+    {
+        $instance = new $model([
+            'name' => 'John Doe',
+            'email' => 'john@doe.com',
+        ]);
+        $instance::boot();
+
+        return $instance;
     }
 }

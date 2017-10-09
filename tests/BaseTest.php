@@ -3,23 +3,11 @@
 namespace Victorlap\Approvable\Tests;
 
 use Victorlap\Approvable\Approval;
-use Victorlap\Approvable\Tests\Models\User;
 use Victorlap\Approvable\Tests\Models\UserCanApprove;
 use Victorlap\Approvable\Tests\Models\UserCannotApprove;
 
 class BaseTest extends TestCase
 {
-    private function returnUserInstance($model = User::class)
-    {
-        $instance = new $model([
-            'name' => 'John Doe',
-            'email' => 'john@doe.com',
-        ]);
-        $instance::boot();
-
-        return $instance;
-    }
-
     public function testApproverCanCreate()
     {
         $user = $this->returnUserInstance(UserCanApprove::class);

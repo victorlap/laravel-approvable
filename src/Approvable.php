@@ -111,7 +111,7 @@ trait Approvable
                 'approvable_type' => $this->getMorphClass(),
                 'approvable_id' => $this->getKey(),
                 'key' => $key,
-                'value' => $this->attributes[$key],
+                'value' => $change,
                 'user_id' => $this->getSystemUserId(),
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),

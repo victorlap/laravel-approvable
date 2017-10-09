@@ -60,6 +60,17 @@ class BaseTest extends TestCase
         $this->assertEquals('John Doe', $user->fresh()->name);
     }
 
+    public function testRegularCannotEditNewAttribute()
+    {
+        $user = $this->returnUserInstance(UserCannotApprove::class);
+        $user->save();
+
+        $user->password = 'secret';
+        $user->save();
+
+        $this->assertEquals('', $user->fresh()->password);
+    }
+
     public function testHasPendingModelChanges()
     {
         $user = $this->returnUserInstance(UserCannotApprove::class);

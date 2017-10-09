@@ -2,6 +2,7 @@
 
 namespace Victorlap\Approvable\Tests;
 
+use Victorlap\Approvable\Approval;
 use Victorlap\Approvable\Tests\Models\User;
 use Victorlap\Approvable\Tests\Models\UserCanApprove;
 use Victorlap\Approvable\Tests\Models\UserCannotApprove;
@@ -96,5 +97,18 @@ class BaseTest extends TestCase
         $user->save();
 
         $this->assertEquals(collect('name'), $user->getPendingApprovalAttributes());
+    }
+
+    public function testClassApprovals()
+    {
+        $user = $this->returnUserInstance(UserCannotApprove::class);
+        $user->save();
+
+        $this->assertEquals(collect(), $user->classApprovals()->toBase());
+
+        $user->name = 'Doe John';
+        $user->save();
+
+        $this->assertEquals(Approval::all(), $user->classApprovals());
     }
 }

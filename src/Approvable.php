@@ -63,7 +63,7 @@ trait Approvable
     /**
      * List all the attributes, that currently have pending changes.
      *
-     * @return \Illuminate\Support\Collection;
+     * @return \Illuminate\Support\Collection
      */
     public function getPendingApprovalAttributes()
     {

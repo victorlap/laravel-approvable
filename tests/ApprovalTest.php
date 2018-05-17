@@ -8,7 +8,6 @@
 
 namespace Victorlap\Approvable\Tests\Models;
 
-
 use Victorlap\Approvable\Approval;
 use Victorlap\Approvable\Tests\TestCase;
 

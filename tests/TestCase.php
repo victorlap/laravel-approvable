@@ -66,7 +66,7 @@ class TestCase extends Orchestra
         ];
     }
 
-    protected function returnPostInstance($model = Post::class)
+    protected function createPost($model = Post::class)
     {
         return $model::create([
             'title' => 'Cool Post',
@@ -75,12 +75,10 @@ class TestCase extends Orchestra
 
     protected function createApproval(array $options = [])
     {
-        $data = array_merge([
+        return Approval::create(array_merge([
             'approvable_type' => Post::class,
             'approvable_id' => 1,
             'key' => 'title',
-        ], $options);
-
-        return Approval::create($data);
+        ], $options));
     }
 }

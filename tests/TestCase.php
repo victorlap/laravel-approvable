@@ -73,7 +73,8 @@ class TestCase extends Orchestra
         ]);
     }
 
-    protected function createApproval(array $options = []) {
+    protected function createApproval(array $options = [])
+    {
         $data = array_merge([
             'approvable_type' => Post::class,
             'approvable_id' => 1,

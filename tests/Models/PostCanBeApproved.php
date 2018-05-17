@@ -2,10 +2,10 @@
 
 namespace Victorlap\Approvable\Tests\Models;
 
-class UserCannotApprove extends User
+class PostCanBeApproved extends Post
 {
     protected function currentUserCanApprove()
     {
-        return false;
+        return true;
     }
 }

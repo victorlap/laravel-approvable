@@ -3,111 +3,101 @@
 namespace Victorlap\Approvable\Tests;
 
 use Victorlap\Approvable\Approval;
-use Victorlap\Approvable\Tests\Models\UserCanApprove;
-use Victorlap\Approvable\Tests\Models\UserCannotApprove;
+use Victorlap\Approvable\Tests\Models\PostCanBeApproved;
+use Victorlap\Approvable\Tests\Models\PostCannotBeApproved;
 
 class BaseTest extends TestCase
 {
-    public function testApproverCanCreate()
+
+    public function test_approvable_can_be_created()
     {
-        $user = $this->returnUserInstance(UserCanApprove::class);
-
-        $user->save();
-
-        $this->assertTrue($user->exists);
+        $post = $this->returnPostInstance(PostCanBeApproved::class);
+        
+        $this->assertTrue($post->exists);
     }
 
-    public function testRegularCanCreate()
+    public function test_unapprovable_can_be_created()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-
-        $user->save();
-
-        $this->assertTrue($user->exists);
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
+        
+        $this->assertTrue($post->exists);
     }
 
-    public function testApproverCanEdit()
+    public function test_approvable_can_be_edited()
     {
-        $user = $this->returnUserInstance(UserCanApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCanBeApproved::class);
 
-        $user->name = 'Doe John';
-        $user->save();
+        $post->title = 'Bad Post';
+        $post->save();
 
-        $this->assertEquals('Doe John', $user->fresh()->name);
+        $this->assertEquals('Bad Post', $post->fresh()->title);
     }
 
-    public function testRegularCannotEdit()
+    public function test_unnaprovable_cannot_be_edited()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
-        $user->name = 'Doe John';
-        $user->save();
+        $post->title = 'Bad Post';
+        $post->save();
 
-        $this->assertEquals('John Doe', $user->fresh()->name);
+        $this->assertEquals('Cool Post', $post->fresh()->title);
     }
 
-    public function testRegularCannotEditNewAttribute()
+    public function test_unaprovable_cannot_add_attribute()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
-        $user->password = 'secret';
-        $user->save();
+        $post->password = 'secret';
+        $post->save();
 
-        $this->assertEquals('', $user->fresh()->password);
+        $this->assertEquals('', $post->fresh()->password);
     }
 
-    public function testHasPendingModelChanges()
+    public function test_is_pending_approval()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
-        $this->assertFalse($user->isPendingApproval());
+        $this->assertFalse($post->isPendingApproval());
 
-        $user->name = 'Doe John';
-        $user->save();
+        $post->title = 'Bad Post';
+        $post->save();
 
-        $this->assertTrue($user->isPendingApproval());
+        $this->assertTrue($post->isPendingApproval());
     }
 
-    public function testHasPendingAttributeChanges()
+    public function test_has_pending_attributes()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
-        $this->assertFalse($user->isPendingApproval('name'));
+        $this->assertFalse($post->isPendingApproval('title'));
 
-        $user->name = 'Doe John';
-        $user->save();
+        $post->title = 'Bad Post';
+        $post->save();
 
-        $this->assertTrue($user->isPendingApproval('name'));
+        $this->assertTrue($post->isPendingApproval('title'));
     }
 
-    public function testListPendingAttributes()
+    public function test_list_pending_attributes()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
-        $this->assertEquals(collect(), $user->getPendingApprovalAttributes());
+        $this->assertEquals(collect(), $post->getPendingApprovalAttributes());
 
-        $user->name = 'Doe John';
-        $user->save();
+        $post->title = 'Bad Post';
+        $post->save();
 
-        $this->assertEquals(collect('name'), $user->getPendingApprovalAttributes());
+        $this->assertEquals(collect('title'), $post->getPendingApprovalAttributes());
     }
 
-    public function testClassApprovals()
+    public function test_class_approvals()
     {
-        $user = $this->returnUserInstance(UserCannotApprove::class);
-        $user->save();
+        $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
-        $this->assertEquals(collect(), $user->classApprovals()->toBase());
+        $this->assertEquals([], $post->classApprovals()->get()->toArray());
 
-        $user->name = 'Doe John';
-        $user->save();
+        $post->title = 'Bad Post';
+        $post->save();
 
-        $this->assertEquals(Approval::all(), $user->classApprovals());
+        $this->assertEquals(Approval::all(), $post->classApprovals()->get());
     }
 }

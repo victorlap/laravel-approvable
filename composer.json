@@ -4,7 +4,8 @@
     "description": "Easily add an approval process to any laravel model",
     "keywords": [
         "victorlap",
-        "laravel-approvable"
+        "laravel-approvable",
+        "approvable"
     ],
     "homepage": "https://github.com/victorlap/laravel-approvable",
     "license": "MIT",
@@ -17,13 +18,13 @@
         }
     ],
     "require": {
-        "php" : "^7.0"
+        "php": "^7.1",
+        "illuminate/database": "5.6.*",
+        "illuminate/support": "5.6.*"
     },
     "require-dev": {
         "orchestra/testbench": "~3.0",
-        "orchestra/database": "~3.1",
-        "phpunit/phpunit": "~5.7",
-        "squizlabs/php_codesniffer": "^2.3"
+        "phpunit/phpunit": "~7.0"
     },
     "autoload": {
         "psr-4": {
@@ -36,16 +37,20 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
-        "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
-        "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Victorlap\\Approvable\\ApprovableServiceProvider"
+            ]
         }
-    },
-    "config": {
-        "sort-packages": true
     }
 }

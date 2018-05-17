@@ -57,7 +57,7 @@ trait Approvable
                     $query->where('key', $attribute);
                 })
                 ->where('approved', false)
-                ->count() > 0;
+                ->exists();
     }
 
     /**
@@ -74,16 +74,12 @@ trait Approvable
     }
 
     /**
-     * Generates a list of the last $limit approvals to any objects of the class it is being called from.
+     * Generates a query for all approvals the class it is being called from.
      *
-     * @param int $limit
-     * @param string $order
-     * @return mixed
      */
-    public function classApprovals($limit = 100, $order = 'desc')
+    public function classApprovals()
     {
-        return Approval::where('approvable_type', get_called_class())
-            ->orderBy('updated_at', $order)->limit($limit)->get();
+        return Approval::where('approvable_type', get_called_class());
     }
 
     /**

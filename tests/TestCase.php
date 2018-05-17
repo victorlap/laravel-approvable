@@ -2,11 +2,13 @@
 
 namespace Victorlap\Approvable\Tests;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Schema;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Victorlap\Approvable\Tests\Models\User;
 use Victorlap\Approvable\ApprovableServiceProvider;
+use Victorlap\Approvable\Tests\Models\Post;
 
 class TestCase extends Orchestra
 {
@@ -21,7 +23,7 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(realpath(__DIR__ . '/database/migrations'));
+        $this->setupDatabase();
     }
 
     /**
@@ -29,18 +31,24 @@ class TestCase extends Orchestra
      */
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('database.default', 'mysql');
-        $app['config']->set('database.connections.mysql', [
-            'driver' => 'mysql',
-            'host' => 'localhost',
-            'database' => 'laravel_approvable',
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
             'prefix' => '',
-            'strict' => false,
         ]);
+    }
+
+    protected function setupDatabase()
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title');
+            $table->timestamps();
+        });
+
+        include_once __DIR__ . '/../migrations/create_approvals_table.php.stub';
+        (new \CreateApprovalsTable())->up();
     }
 
     /**
@@ -52,17 +60,14 @@ class TestCase extends Orchestra
     {
         return [
             ApprovableServiceProvider::class,
-            ConsoleServiceProvider::class,
         ];
     }
 
-    protected function returnUserInstance($model = User::class)
+    protected function returnPostInstance($model = Post::class)
     {
-        $instance = new $model([
-            'name' => 'John Doe',
-            'email' => 'john@doe.com',
+        $instance = $model::create([
+            'title' => 'Cool Post',
         ]);
-        $instance::boot();
 
         return $instance;
     }

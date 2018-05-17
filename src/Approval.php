@@ -10,24 +10,38 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class Approval extends Eloquent
 {
-    /**
-     * @var string
-     */
     public $table = 'approvals';
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
     public function approvable()
     {
         return $this->morphTo();
     }
 
-    /**
-     * @return mixed
-     */
     public function getFieldName()
     {
         return $this->key;
+    }
+
+    public function accept() {
+
+    }
+
+    public function reject() {
+
+    }
+
+    public function scopeOpen($query)
+    {
+        return $query->where('approved', null);
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('approved', false);
+    }
+
+    public function scopeAccepted($query)
+    {
+        return $query->where('approved', true);
     }
 }

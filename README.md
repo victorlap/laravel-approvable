@@ -8,10 +8,13 @@
 [![StyleCI](https://styleci.io/repos/80375034/shield?branch=master)](https://styleci.io/repos/80375034)
 [![Total Downloads][ico-downloads]][link-downloads]
 
-Easily add an approval process to any laravel model
+Easily add an approval process to any laravel model.
 
+## Description
 
-## Install
+Laravel Approvable is a package which helps when you have certain models in your application that should be editable by users, but the fields that they edit need to be approved first.
+
+## Installation
 
 Via Composer
 
@@ -19,48 +22,63 @@ Via Composer
 $ composer require victorlap/laravel-approvable
 ```
 
-Next, you must install the service provider:
-
-```php
-// config/app.php
-'providers' => [
-    ...
-    Victorlap\Approvable\ApprovableServiceProvider::class,
-];
-```
-
 You can publish the migration with:
 ```bash
 php artisan vendor:publish --provider="Victorlap\Approvable\ApprovableServiceProvider" --tag="migrations"
 ```
 
-*Note*: The default migration assumes you are using integers for your model IDs. If you are using UUIDs, or some other format, adjust the format of the approvable_id and user_id fields in the published migration before continuing.
-
-After the migration has been published you can create the `approvals` table by running the migrations:
-
-
 ```bash
 php artisan migrate
 ```
 
-## Usage
+## Setup
+We have a `Post` model. Each visitor on your site can edit any post, but before you want to publish the change to your website, you want to approve it first. Here comes this package into play. By adding the `\Victorlap\Approvable\Approvable` trait to your `Post` model, when a visitor makes a change, we store a change request in the database. These changes can then later be applied, or denied by administrators. The  currentUserCanApprove` method can be used to determine who is authorized to make a change.
 
- 1. Add the trait to your eloquent model.
- 2. (Optional) Specify the `approveOf` or `dontApproveOf` array to skip certain fields.
-
-## Example
 ```php
 use Illuminate\Database\Eloquent\Model;
 use Victorlap\Approvable\Approvable;
 
-class User extends Model
+class Post extends Model
 {
     use Aprrovable;
 
     protected $approveOf = array();
 
     protected $dontApproveOf = array();
+    
+    protected function currentUserCanApprove()
+    {
+        return Auth::check();
+    }
 }
+```
+
+## Usage
+Making a change to a model by a user who can approve does not change.
+```php
+$post->title = "Very Good Post";
+$post->save(); // This still works!
+```
+
+Making a change by an unauthorized user works the same.
+```php
+$post->title = "Very Good Post";
+$post->save(); // Post remains with the old title in the database, however a change request is now also present.
+```
+
+You can retrieve a list of attributes that have pending changes by using
+```php
+$post->getPendingApprovalAttributes();
+```
+
+Or check if a certain attribute has pending changes
+```php
+$post->isPendingApproval('title');
+```
+
+Scopes have been defined to quickly see approvals in different states. For example if you wnat to show administrators a list with changes that can be accepted you can use the `open` scope. Other scopes are `accepted` and `rejected`.
+```php
+Approval::open()->get();
 ```
 
 ## Change log

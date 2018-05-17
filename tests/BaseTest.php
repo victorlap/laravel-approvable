@@ -32,7 +32,7 @@ class BaseTest extends TestCase
         $this->assertEquals('Bad Post', $post->fresh()->title);
     }
 
-    public function test_unnaprovable_cannot_be_edited()
+    public function test_unnapprovable_cannot_be_edited()
     {
         $post = $this->returnPostInstance(PostCannotBeApproved::class);
 
@@ -42,7 +42,7 @@ class BaseTest extends TestCase
         $this->assertEquals('Cool Post', $post->fresh()->title);
     }
 
-    public function test_unaprovable_cannot_add_attribute()
+    public function test_unapprovable_cannot_add_attribute()
     {
         $post = $this->returnPostInstance(PostCannotBeApproved::class);
 

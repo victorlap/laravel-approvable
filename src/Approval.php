@@ -22,12 +22,12 @@ class Approval extends Eloquent
         return $this->key;
     }
 
-    public function accept() {
-
+    public function accept()
+    {
     }
 
-    public function reject() {
-
+    public function reject()
+    {
     }
 
     public function scopeOpen($query)

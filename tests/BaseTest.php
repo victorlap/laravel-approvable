@@ -8,7 +8,6 @@ use Victorlap\Approvable\Tests\Models\PostCannotBeApproved;
 
 class BaseTest extends TestCase
 {
-
     public function test_approvable_can_be_created()
     {
         $post = $this->returnPostInstance(PostCanBeApproved::class);

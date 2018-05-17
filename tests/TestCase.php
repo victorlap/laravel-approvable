@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Victorlap\Approvable\ApprovableServiceProvider;
+use Victorlap\Approvable\Approval;
 use Victorlap\Approvable\Tests\Models\Post;
 
 class TestCase extends Orchestra
@@ -24,6 +25,8 @@ class TestCase extends Orchestra
         parent::setUp();
 
         $this->setupDatabase();
+
+        Approval::unguard();
     }
 
     /**
@@ -65,10 +68,18 @@ class TestCase extends Orchestra
 
     protected function returnPostInstance($model = Post::class)
     {
-        $instance = $model::create([
+        return $model::create([
             'title' => 'Cool Post',
         ]);
+    }
 
-        return $instance;
+    protected function createApproval(array $options = []) {
+        $data = array_merge([
+            'approvable_type' => Post::class,
+            'approvable_id' => 1,
+            'key' => 'title',
+        ], $options);
+
+        return Approval::create($data);
     }
 }

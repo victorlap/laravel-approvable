@@ -56,7 +56,7 @@ trait Approvable
                 ->when($attribute !== null, function ($query) use ($attribute) {
                     $query->where('key', $attribute);
                 })
-                ->where('approved', false)
+                ->where('approved', null)
                 ->exists();
     }
 
@@ -68,18 +68,9 @@ trait Approvable
     public function getPendingApprovalAttributes()
     {
         return $this->approvals()
-            ->where('approved', false)
+            ->where('approved', null)
             ->groupBy('key')
             ->pluck('key');
-    }
-
-    /**
-     * Generates a query for all approvals the class it is being called from.
-     *
-     */
-    public function classApprovals()
-    {
-        return Approval::where('approvable_type', get_called_class());
     }
 
     /**
@@ -172,10 +163,7 @@ trait Approvable
      */
     protected function getSystemUserId()
     {
-        if (Auth::check()) {
-            return Auth::user()->getAuthIdentifier();
-        }
-        return null;
+        return Auth::id() ?? null;
     }
 
     /**
@@ -183,6 +171,6 @@ trait Approvable
      */
     protected function currentUserCanApprove()
     {
-        return Auth::check() && Auth::user()->can('approve', $this);
+        return Auth::user()->can('approve', $this) ?? false;
     }
 }

@@ -44,4 +44,9 @@ class Approval extends Eloquent
     {
         return $query->where('approved', true);
     }
+
+    public function scopeOfClass($query, $class)
+    {
+        return $query->where('approvable_type', $class);
+    }
 }

@@ -4,10 +4,6 @@ namespace Victorlap\Approvable;
 
 use Illuminate\Support\ServiceProvider;
 
-/**
- * Class ApprovableServiceProvider
- * @package Victorlap\Approvable
- */
 class ApprovableServiceProvider extends ServiceProvider
 {
     /**

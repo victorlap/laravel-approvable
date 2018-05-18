@@ -7,10 +7,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Class Approvable
- * @package Victorlap\Approvable
- */
 trait Approvable
 {
 
@@ -35,9 +31,6 @@ trait Approvable
         });
     }
 
-    /**
-     * @return MorphMany
-     */
     public function approvals(): MorphMany
     {
         return $this->morphMany(Approval::class, 'approvable');
@@ -73,6 +66,11 @@ trait Approvable
             ->pluck('key');
     }
 
+    /**
+     * Disable the approval process for this model instance.
+     *
+     * @param bool $withoutApproval
+     */
     public function withoutApproval(bool $withoutApproval = true): void
     {
         $this->withoutApproval = $withoutApproval;
@@ -151,6 +149,12 @@ trait Approvable
         return $changes_to_record;
     }
 
+    /**
+     * Return whether an attribute of this model should be approvable.
+     *
+     * @param string $key
+     * @return bool
+     */
     private function isApprovable(string $key): bool
     {
         if (isset($this->approveOf) && in_array($key, $this->approveOf)) {
@@ -163,11 +167,21 @@ trait Approvable
         return empty($this->approveOf);
     }
 
+    /**
+     * Get the user id that should be stored as the requester for the approval.
+     *
+     * @return int|null
+     */
     protected function getSystemUserId(): ?int
     {
         return Auth::id() ?? null;
     }
 
+    /**
+     * Check if the approval process needs to happen for the currently logged in user.
+     *
+     * @return bool
+     */
     protected function currentUserCanApprove(): bool
     {
         return Auth::check() && Auth::user()->can('approve', $this) ?? false;

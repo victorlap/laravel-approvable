@@ -15,23 +15,14 @@ class TestCase extends Orchestra
 {
     use DatabaseTransactions;
 
-    /**
-     * Setup the test environment.
-     *
-     * @return void
-     */
     public function setUp()
     {
         parent::setUp();
 
         $this->setupDatabase();
-
-        Approval::unguard();
+        $this->unguardModels();
     }
 
-    /**
-     * @param \Illuminate\Foundation\Application $app
-     */
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'sqlite');
@@ -55,11 +46,11 @@ class TestCase extends Orchestra
         (new \CreateApprovalsTable())->up();
     }
 
-    /**
-     * Get Approvable package providers.
-     *
-     * @return array
-     */
+    protected function unguardModels()
+    {
+        Approval::unguard();
+    }
+
     protected function getPackageProviders($app)
     {
         return [

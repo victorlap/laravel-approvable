@@ -6,10 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-/**
- * Class Approval
- * @package Victorlap\Approvable
- */
 class Approval extends Eloquent
 {
     public $table = 'approvals';

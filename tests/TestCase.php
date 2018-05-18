@@ -47,6 +47,7 @@ class TestCase extends Orchestra
         Schema::create('posts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
+            $table->string('body')->nullable();
             $table->timestamps();
         });
 

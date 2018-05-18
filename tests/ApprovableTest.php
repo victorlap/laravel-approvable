@@ -2,6 +2,10 @@
 
 namespace Victorlap\Approvable\Tests;
 
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Support\Facades\Auth;
+use Mockery;
+use Victorlap\Approvable\Tests\Models\Post;
 use Victorlap\Approvable\Tests\Models\PostCanBeApproved;
 use Victorlap\Approvable\Tests\Models\PostCannotBeApproved;
 
@@ -28,7 +32,7 @@ class ApprovableTest extends TestCase
         $post->title = 'Bad Post';
         $post->save();
 
-        $this->assertEquals('Bad Post', $post->fresh()->title);
+        $this->assertEquals('Bad Post', $post->title);
     }
 
     public function test_unnapprovable_cannot_be_edited()
@@ -38,17 +42,43 @@ class ApprovableTest extends TestCase
         $post->title = 'Bad Post';
         $post->save();
 
-        $this->assertEquals('Cool Post', $post->fresh()->title);
+        $this->assertEquals('Cool Post', $post->title);
     }
 
-    public function test_unapprovable_cannot_add_attribute()
+    public function test_unnapprovable_cannot_add_attribute()
     {
         $post = $this->createPost(PostCannotBeApproved::class);
 
-        $post->password = 'secret';
+        $post->body = 'Bad Body';
         $post->save();
 
-        $this->assertEquals('', $post->fresh()->password);
+        $this->assertNull($post->body);
+    }
+
+    public function test_approve_of_array()
+    {
+        $post = $this->createPost(PostCannotBeApproved::class);
+        $post->approveOf = ['title'];
+
+        $post->title = 'Bad Post';
+        $post->body = 'Bad Body';
+        $post->save();
+
+        $this->assertEquals('Cool Post', $post->title);
+        $this->assertEquals('Bad Body', $post->body);
+    }
+
+    public function test_dont_approve_of_array()
+    {
+        $post = $this->createPost(PostCannotBeApproved::class);
+        $post->dontApproveOf = ['title'];
+
+        $post->title = 'Bad Post';
+        $post->body = 'Bad Body';
+        $post->save();
+
+        $this->assertEquals('Bad Post', $post->title);
+        $this->assertNull($post->body);
     }
 
     public function test_is_pending_approval()
@@ -84,5 +114,38 @@ class ApprovableTest extends TestCase
         $post->title = 'Bad Post';
         $post->save();
         $this->assertEquals(collect('title'), $post->getPendingApprovalAttributes());
+    }
+
+    public function test_default_authorization_approved()
+    {
+        $post = $this->createPost(Post::class);
+        $user = Mockery::mock(Authenticatable::class)
+            ->shouldReceive('can')
+            ->with('approve', $post)
+            ->andReturnTrue()
+            ->getMock();
+        Auth::shouldReceive('check')->once()->andReturnTrue();
+        Auth::shouldReceive('user')->once()->andreturn($user);
+
+        $post->title = 'Bad Post';
+        $post->save();
+        $this->assertEquals('Bad Post', $post->title);
+    }
+
+    public function test_default_authorization_fails()
+    {
+        $post = $this->createPost(Post::class);
+        $user = Mockery::mock(Authenticatable::class)
+            ->shouldReceive('can')
+            ->with('approve', $post)
+            ->andReturnFalse()
+            ->getMock();
+        Auth::shouldReceive('id')->once()->andReturn(1);
+        Auth::shouldReceive('check')->once()->andReturnTrue();
+        Auth::shouldReceive('user')->once()->andreturn($user);
+
+        $post->title = 'Bad Post';
+        $post->save();
+        $this->assertEquals('Cool Post', $post->title);
     }
 }

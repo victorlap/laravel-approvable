@@ -29,7 +29,7 @@ php artisan migrate
 ```
 
 ## Setup
-We have a `Post` model. Each visitor on your site can edit any post, but before you want to publish the change to your website, you want to approve it first. Here comes this package into play. By adding the `\Victorlap\Approvable\Approvable` trait to your `Post` model, when a visitor makes a change, we store a change request in the database. These changes can then later be applied, or denied by administrators. The  `currentUserCanApprove` method can be used to determine who is authorized to make a change.
+Assume you have a `Post` model. Each visitor on your site can edit any post, but before you want to publish the change to your website, you want to approve it first. By adding the `\Victorlap\Approvable\Approvable` trait to your `Post` model, when a visitor makes a change, a change request gets stored in the database. These changes can then later be applied, or denied by administrators. The  `currentUserCanApprove` method can be used to determine who is authorized to make a change.
 
 ```php
 use Illuminate\Database\Eloquent\Model;
@@ -85,7 +85,7 @@ Or check if a certain attribute has pending changes
 $post->isPendingApproval('title');
 ```
 
-Scopes have been defined to quickly see approvals in different states. For example if you wnat to show administrators a list with changes that can be accepted you can use the `open` scope. Other scopes are `accepted` and `rejected` and `ofClass`.
+Scopes have been defined to quickly see approvals in different states. For example if you wnat to show administrators a list with changes that can be accepted you can use the `open` scope. Other scopes are `accepted`, `rejected` and `ofClass`.
 ```php
 Approval::open()->get();
 Approval::accepted()->get();
@@ -93,9 +93,22 @@ Approval::rejected()->get();
 Approval::ofClass(Post::class)->get();
 ```
 
-You can combine the scopes of course
+You can combine the scopes of course, or use them in combination with regular query builder methods
 ```php
 Approval::open()->ofClass(Post::class)->get();
+```
+
+Accepting and rejecting of approvals can be done using the `accept` and `reject` methods on the Approval.
+```php
+$approvals = Post::find(1)->approvals()->open()->get();
+$approvals->each->accept(); // or
+$approvals->each->reject();
+```
+
+If you dont want a model to pass approval, you can use the `withoutApproval()` method.
+```php
+$post->withoutApproval();
+$post->save(); // Now this post model is not checked for changes.
 ```
 
 ## Change log

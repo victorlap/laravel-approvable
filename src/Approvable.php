@@ -3,6 +3,7 @@
 namespace Victorlap\Approvable;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -13,22 +14,21 @@ use Illuminate\Support\Facades\DB;
 trait Approvable
 {
 
-    /**
-     * @var array
-     */
-    protected $approveOf = array();
+    /** @var array */
+    public $approveOf = array();
 
-    /**
-     * @var array
-     */
-    protected $dontApproveOf = array();
+    /** @var array */
+    public $dontApproveOf = array();
+
+    /** @var bool */
+    protected $withoutApproval = false;
 
     /**
      * Create the event listeners for the saving event
      * This lets us save approvals whenever a save is made, no matter the
      * http method
      */
-    public static function bootApprovable()
+    public static function bootApprovable(): void
     {
         static::saving(function ($model) {
             return $model->preSave();
@@ -38,7 +38,7 @@ trait Approvable
     /**
      * @return MorphMany
      */
-    public function approvals()
+    public function approvals(): MorphMany
     {
         return $this->morphMany(Approval::class, 'approvable');
     }
@@ -50,14 +50,14 @@ trait Approvable
      * @param null $attribute
      * @return bool
      */
-    public function isPendingApproval($attribute = null)
+    public function isPendingApproval($attribute = null): bool
     {
         return $this->approvals()
-                ->when($attribute !== null, function ($query) use ($attribute) {
-                    $query->where('key', $attribute);
-                })
-                ->where('approved', null)
-                ->exists();
+            ->when($attribute !== null, function ($query) use ($attribute) {
+                $query->where('key', $attribute);
+            })
+            ->where('approved', null)
+            ->exists();
     }
 
     /**
@@ -65,7 +65,7 @@ trait Approvable
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getPendingApprovalAttributes()
+    public function getPendingApprovalAttributes(): Collection
     {
         return $this->approvals()
             ->where('approved', null)
@@ -73,13 +73,22 @@ trait Approvable
             ->pluck('key');
     }
 
+    public function withoutApproval(bool $withoutApproval = true): void
+    {
+        $this->withoutApproval = $withoutApproval;
+    }
+
     /**
      * Invoked before a model is saved. Return false to abort the operation.
      *
      * @return bool
      */
-    public function preSave()
+    protected function preSave(): bool
     {
+        if ($this->withoutApproval) {
+            return true;
+        }
+
         if ($this->currentUserCanApprove()) {
             // If the user is able to approve edits, do nothing.
             return true;
@@ -119,7 +128,7 @@ trait Approvable
      *
      * @return array fields with new data, that should be recorded
      */
-    private function changedApprovableFields()
+    private function changedApprovableFields(): array
     {
         $dirty = $this->getDirty();
         $changes_to_record = array();
@@ -142,11 +151,7 @@ trait Approvable
         return $changes_to_record;
     }
 
-    /**
-     * @param $key
-     * @return bool
-     */
-    private function isApprovable($key)
+    private function isApprovable(string $key): bool
     {
         if (isset($this->approveOf) && in_array($key, $this->approveOf)) {
             return true;
@@ -158,19 +163,13 @@ trait Approvable
         return empty($this->approveOf);
     }
 
-    /**
-     * @return mixed|null
-     */
-    protected function getSystemUserId()
+    protected function getSystemUserId(): ?int
     {
         return Auth::id() ?? null;
     }
 
-    /**
-     * @return bool
-     */
-    protected function currentUserCanApprove()
+    protected function currentUserCanApprove(): bool
     {
-        return Auth::user()->can('approve', $this) ?? false;
+        return Auth::check() && Auth::user()->can('approve', $this) ?? false;
     }
 }

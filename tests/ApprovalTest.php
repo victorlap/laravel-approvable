@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: victor
- * Date: 18/05/2018
- * Time: 01:04
- */
 
 namespace Victorlap\Approvable\Tests\Models;
 
@@ -58,5 +52,38 @@ class ApprovalTest extends TestCase
         $this->assertCount(0, Approval::open()->get());
         $this->assertCount(0, Approval::accepted()->get());
         $this->assertCount(1, Approval::rejected()->get());
+    }
+
+    public function test_accept_method()
+    {
+        $post = $this->createPost(PostCannotBeApproved::class);
+        $post->title = 'Bad Post';
+        $post->save();
+
+        $this->assertEquals('Cool Post', $post->title);
+        $this->assertNull(Approval::first()->approved);
+
+        $post->approvals->each->accept();
+
+        //TODO: Fix test below
+        //$this->assertEquals('Bad Post', $post->fresh()->title);
+        $this->assertEquals('Bad Post', Post::first()->title);
+        $this->assertEquals(1, Post::count());
+        $this->assertTrue(Approval::first()->approved);
+    }
+
+    public function test_reject_method()
+    {
+        $post = $this->createPost(PostCannotBeApproved::class);
+        $post->title = 'Bad Post';
+        $post->save();
+
+        $this->assertEquals('Cool Post', $post->title);
+        $this->assertNull(Approval::first()->approved);
+
+        $post->approvals->each->reject();
+
+        $this->assertEquals('Cool Post', $post->fresh()->title);
+        $this->assertFalse(Approval::first()->approved);
     }
 }

@@ -111,6 +111,9 @@ $post->withoutApproval();
 $post->save(); // Now this post model is not checked for changes.
 ```
 
+## Limitations
+Currently Approvable does not handle creation of models, PR's are welcome for this.
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

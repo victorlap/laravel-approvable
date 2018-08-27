@@ -28,7 +28,7 @@ class Approval extends Eloquent
         $approvable->withoutApproval();
         $approvable->{$this->getFieldName()} = $this->value;
         $approvable->save();
-        $approvable->withoutApproval(false);
+        $approvable->withApproval();
 
         $this->approved = true;
         $this->save();

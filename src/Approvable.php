@@ -69,11 +69,28 @@ trait Approvable
     /**
      * Disable the approval process for this model instance.
      *
-     * @param bool $withoutApproval
+     * @param bool $withoutApproval Deprecated, see withoApproval()
+     *                              Will be removed in 2.0.0
+     *
+     * @return self
      */
-    public function withoutApproval(bool $withoutApproval = true): void
+    public function withoutApproval(bool $withoutApproval = true): self
     {
         $this->withoutApproval = $withoutApproval;
+
+        return $this;
+    }
+
+    /**
+     * Enable the approval process for this model instance
+     *
+     * @return self
+     */
+    public function withApproval(): self
+    {
+        $this->withoutApproval = false;
+
+        return $this;
     }
 
     /**

@@ -107,9 +107,15 @@ $approvals->each->reject();
 
 If you dont want a model to pass approval, you can use the `withoutApproval()` method.
 ```php
-$post->withoutApproval();
-$post->save(); // Now this post model is not checked for changes.
+// Now this post model is not checked for changes.
+$post->withoutApproval()
+      ->fill([
+        'title' => 'A new title',
+      ])
+      ->save();
 ```
+
+To re-enable the approval for this model instance, you can use the `withApproval()` method.
 
 ## Limitations
 Currently Approvable does not handle creation of models, PR's are welcome for this.

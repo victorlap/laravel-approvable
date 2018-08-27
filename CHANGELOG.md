@@ -4,22 +4,13 @@ All Notable changes to `laravel-approvable` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## NEXT - YYYY-MM-DD
+## Version 1.1.0 - xxxx-xx-xx
+Added:
+- `withApproval()` method.
+- `withoutApproval()` is now chainable.
 
-### Added
-- Nothing
-
-### Deprecated
-- Nothing
-
-### Fixed
-- Nothing
-
-### Removed
-- Nothing
-
-### Security
-- Nothing
+Deprecated:
+- `withoutApproval($withoutApproval = true)` the `$withoutApproval` flag is now deprecated, use the `withApproval()` method if you want to re-enable the approval process.
 
 ## Version 1.0.0 - 2018-05-18
 Initial release.

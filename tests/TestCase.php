@@ -15,7 +15,7 @@ class TestCase extends Orchestra
 {
     use DatabaseTransactions;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
